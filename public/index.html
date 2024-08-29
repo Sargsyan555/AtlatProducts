@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Product List</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Product List</h1>
+        <form id="productForm" class="mb-4" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" id="price" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Product Image</label>
+                <input type="file" class="form-control" id="image" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+
+        <div id="productList" class="row"></div> <!-- Use Bootstrap's row to organize the layout -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/api/products')
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById('productList');
+                    productList.innerHTML = ''; // Clear existing products
+                    products.forEach(product => {
+                        const productHtml = `
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <img src="${product.imageUrl}" class="card-img-top" alt="${product.name}" style="max-height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.name}</h5>
+                                        <p class="card-text">${product.price} USD</p>
+                                        <p class="card-text">${product.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        productList.innerHTML += productHtml;
+                    });
+                });
+
+            document.getElementById('productForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const price = document.getElementById('price').value;
+                const description = document.getElementById('description').value;
+                const image = document.getElementById('image').files[0];
+
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('price', price);
+                formData.append('description', description);
+                formData.append('image', image);
+
+                fetch('/api/products', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(product => {
+                    const productHtml = `
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <img src="${product.imageUrl}" class="card-img-top" alt="${product.name}" style="max-height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.name}</h5>
+                                    <p class="card-text">${product.price} USD</p>
+                                    <p class="card-text">${product.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('productList').innerHTML += productHtml;
+                })
+                .catch(error => console.error('Error adding product:', error));
+
+                document.getElementById('productForm').reset();
+            });
+        });
+    </script>
+</body>
+</html>
