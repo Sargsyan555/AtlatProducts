@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://127.0.0.1:27017';
 const dbName = 'productdb';
 const upload = multer({ dest: 'public/uploads/' }); // Save images to the 'public/uploads' folder
 
@@ -28,7 +28,7 @@ connectToMongo().then(database => {
             const products = await db.collection('products').find().toArray();
             res.json(products);
         } catch (error) {
-            res.status(500).json({ error: 'Failed to fetch products' });
+                ires.status(500).json({ error: 'Failed to fetch products' });
         }
     });
 
