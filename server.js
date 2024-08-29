@@ -44,8 +44,8 @@ connectToMongo().then(database => {
         }
     });
 
-    app.listen(3000, () => {
-        console.log('Server is running on http://localhost:3000');
+    app.listen(3019, () => {
+        console.log('Server is running on http://localhost:3019');
     });
 }).catch(error => {
     console.error('Failed to connect to MongoDB', error);
